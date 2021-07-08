@@ -1,0 +1,21 @@
+<h3 class="mt-4">Đăng bài viết mới</h3>
+<div class="mt-4">
+    <form method="POST" action="/posts/store">
+        <div class="form-group">
+            <label for="name">Tiêu đề</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Hãy nhập tiêu đề bài báo">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Mô tả</label>
+            <input type="text" class="form-control" id="description" name="description" placeholder="Hãy nhập mô tả bài báo">
+        </div>
+
+        <div class="form-group">
+            <label for="image">Hình ảnh</label>
+            <input type="text" class="form-control" id="image" name="image" placeholder="Thêm đường dẫn hình ảnh">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Đăng bài</button>
+    </form>
+</div>
