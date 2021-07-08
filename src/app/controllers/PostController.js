@@ -1,5 +1,5 @@
 const Post = require('../models/Post');
-const { mongooseToObject } = require('../../ulti/mongoose')
+const { mongooseToObject } = require('../../util/mongoose')
 
 class PostController {
 
@@ -21,13 +21,46 @@ class PostController {
     store(req, res, next) {
         const post = new Post(req.body);
         post.save()
-            .then(() => res.redirect(`/`))
+            .then(() => res.redirect('/me/stored/posts'))
             .catch(error => {
                 
             });
     }
 
-    
+    // [GET] /posts/:id/edit
+    edit(req, res, next) {
+        Post.findById(req.params.id)
+            .then(post =>  res.render('posts/edit', { post: mongooseToObject(post)}))
+            .catch(next);
+    }
+
+    // [PUT] /posts/:id
+    update(req, res, next) {
+        Post.updateOne({ _id: req.params.id}, req.body)
+            .then(() => res.redirect('/me/stored/posts'))
+            .catch(next);
+    }
+
+    // [DELETE] /posts/:id
+    destroy(req, res, next) {
+        Post.delete({ _id: req.params.id})
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    // [DELETE] /posts/:id/force
+    forceDestroy(req, res, next) {
+        Post.deleteOne({ _id: req.params.id})
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
+
+    // [PATCH] /posts/:id/restore
+    restore(req, res, next) {
+        Post.restore({ _id: req.params.id})
+            .then(() => res.redirect('back'))
+            .catch(next);
+    }
 
 }
 

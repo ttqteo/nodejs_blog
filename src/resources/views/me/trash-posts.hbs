@@ -1,0 +1,94 @@
+<div class="mt-4">
+    <div>
+        <h3>Bài viết đã xoá</h3>
+        <a href="/me/stored/posts">Quay lại</a>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Tiêu đề</th>
+              <th scope="col" colspan="2">Thời gian xoá</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each posts}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.deletedAt}}</td>
+                <td>
+                    <a href="" class="btn btn-link btn-restore" data-id="{{this._id}}">Khôi phục</a>
+                    <a href="" class="btn btn-link" data-toggle="modal" data-id="{{this._id}}" data-target="#delete-post-modal">Xoá vĩnh viễn</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="4" class="text-center">
+                Thùng rác rỗng.
+                <a href="/me/stored/posts">Danh sách bài viết</a>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{!-- Confirm delete post --}}
+
+<div id="delete-post-modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xoá bài viết</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Không thể khôi phục được nữa. Bạn chắc chắn xoá khoá học?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+        <button id="btn-delete-post" type="button" class="btn btn-danger">Xoá vĩnh viễn</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Hidden form delete-restore --}}
+<form name="delete-post-form" method="POST"></form>
+<form name="restore-post-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var postId;
+        var deleteForm = document.forms['delete-post-form'];
+        var restoreForm = document.forms['restore-post-form'];
+        var btnDeletePost = document.getElementById('btn-delete-post');
+        var restoreBtn = $('.btn-restore');
+
+        // When dialog confirm clicked
+        $('#delete-post-modal').on('show.bs.modal', function(e){
+            var button = $(e.relatedTarget);
+            postId = button.data('id');
+        });
+
+        // When delete post btn clicked
+        btnDeletePost.onclick = function() {
+            deleteForm.action = '/posts/' + postId + '/force?_method=DELETE';
+            deleteForm.submit();
+        }
+
+        // Restore button click
+        restoreBtn.click(function(e) {
+          e.preventDefault();
+
+          var postId = $(this).data('id');
+          console.log(postId)
+          restoreForm.action = '/posts/' + postId + '/restore?_method=PATCH';
+          restoreForm.submit();
+        })
+    });
+</script>

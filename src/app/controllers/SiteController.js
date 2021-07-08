@@ -1,5 +1,5 @@
 const Post = require('../models/Post');
-const { multipleMongooseToObject } = require('../../ulti/mongoose')
+const { multipleMongooseToObject } = require('../../util/mongoose')
 
 class SiteController {
     

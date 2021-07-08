@@ -1,0 +1,84 @@
+<div class="mt-4">
+    <div>
+        <h3>Bài viết của tôi</h3>
+        <a href="/me/trash/posts">
+          Thùng rác
+          ({{deletedCount}})
+        </a>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Tiêu đề</th>
+              <th scope="col" colspan="2">Thời gian tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each posts}}
+            <tr>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a href="/posts/{{this._id}}/edit" class="btn btn-link">Sửa</a>
+                    <a href="" class="btn btn-link" data-toggle="modal" data-id="{{this._id}}" data-target="#delete-post-modal">Xoá</a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="4" class="text-center">
+                Bạn chưa có bài viết nào.
+                <a href="/posts/create">Đăng bài viết mới.</a>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{!-- Confirm delete post --}}
+
+<div id="delete-post-modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xoá bài viết</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn muốn xoá bài viết này?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Huỷ</button>
+        <button id="btn-delete-post" type="button" class="btn btn-danger">Xoá</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form name="delete-post-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var postId;
+      var deleteForm = document.forms['delete-post-form'];
+      var btnDeletePost = document.getElementById('btn-delete-post');
+
+      // When dialog confirm clicked
+      $('#delete-post-modal').on('show.bs.modal', function(e){
+          var button = $(e.relatedTarget);
+          postId = button.data('id');
+      });
+
+      // When delete post btn clicked
+      btnDeletePost.onclick = function() {
+          deleteForm.action = '/posts/' + postId + '?_method=DELETE';
+          deleteForm.submit();
+      }
+    });
+</script>
