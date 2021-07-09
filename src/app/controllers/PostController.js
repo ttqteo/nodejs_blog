@@ -20,11 +20,10 @@ class PostController {
     // [POST] /posts/store
     store(req, res, next) {
         const post = new Post(req.body);
-        post.save()
+        post
+            .save()
             .then(() => res.redirect('/me/stored/posts'))
-            .catch(error => {
-                
-            });
+            .catch(next);
     }
 
     // [GET] /posts/:id/edit
