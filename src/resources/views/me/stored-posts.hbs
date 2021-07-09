@@ -1,4 +1,4 @@
-<div class="mt-4">
+<form class="mt-4" name="container-form" method="POST" action="/posts/handle-form-action">
     <div>
         <h3>Bài viết của tôi</h3>
         <a href="/me/trash/posts">
@@ -7,10 +7,28 @@
         </a>
     </div>
 
+    <div class="mt-4 d-flex aligh-items-center">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+            <label class="form-check-label" for="checkbox-all">
+              Chọn tất cả
+            </label>
+        </div>
+        <select class="form-control form-control-sm select-all-option" id="" name="action" required>
+            <option value="">--Chọn hành động--</option>
+            <option value="delete">Xoá</option>
+        </select>
+
+        <button class="btn btn-primary btn-sm btn-check-all-submit" disabled>Thực hiện</button>
+    </div>
+
     <table class="table mt-4">
         <thead>
             <tr>
-              <th scope="col">#</th>
+              <th scope="col"></th>
+              <th scope="col">
+                #
+              </th>
               <th scope="col">Tiêu đề</th>
               <th scope="col" colspan="2">Thời gian tạo</th>
             </tr>
@@ -18,6 +36,11 @@
         <tbody>
             {{#each posts}}
             <tr>
+                <td>
+                  <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="postIds[]" value="{{this._id}}" id="defaultCheck1">
+                  </div>
+                </td>
                 <th scope="row">{{sum @index 1}}</th>
                 <td>{{this.name}}</td>
                 <td>{{this.createdAt}}</td>
@@ -36,7 +59,7 @@
             {{/each}}
         </tbody>
     </table>
-</div>
+</form>
 
 {{!-- Confirm delete post --}}
 
@@ -65,20 +88,54 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      var postId;
-      var deleteForm = document.forms['delete-post-form'];
-      var btnDeletePost = document.getElementById('btn-delete-post');
+        var postId;
+        var deleteForm = document.forms['delete-post-form'];
+        var containerForm = document.forms['container-form'];
+        var btnDeletePost = document.getElementById('btn-delete-post');
+        var checkboxAll = $('#checkbox-all');
+        var postItemCheckbox = $('input[name="postIds[]"]');
+        var checkAllSubmitBtn = $('.btn-check-all-submit');
 
-      // When dialog confirm clicked
-      $('#delete-post-modal').on('show.bs.modal', function(e){
-          var button = $(e.relatedTarget);
-          postId = button.data('id');
-      });
+        // When dialog confirm clicked
+        $('#delete-post-modal').on('show.bs.modal', function(e){
+            var button = $(e.relatedTarget);
+            postId = button.data('id');
+        });
 
-      // When delete post btn clicked
-      btnDeletePost.onclick = function() {
-          deleteForm.action = '/posts/' + postId + '?_method=DELETE';
-          deleteForm.submit();
-      }
+        // When delete post btn clicked
+        btnDeletePost.onclick = function() {
+            deleteForm.action = '/posts/' + postId + '?_method=DELETE';
+            deleteForm.submit();
+        }
+        
+        // Checkbox all change
+        checkboxAll.change(function(){
+            var isCheckedAll = $(this).prop('checked');
+            postItemCheckbox.prop('checked', isCheckedAll);
+            renderCheckAllSubmitBtn();
+        });
+
+        // Post item checkbox change
+        postItemCheckbox.change(function() {
+            var isCheckedAll = postItemCheckbox.length === $('input[name="postIds[]"]:checked').length;
+            checkboxAll.prop('checked', isCheckedAll)
+            renderCheckAllSubmitBtn();
+        })
+
+        // Check all submit button clicked
+        checkAllSubmitBtn.on('submit', function(e) {
+            containerForm.submit();
+        })
+
+        // Re-render Check all Submit Button
+        function renderCheckAllSubmitBtn() {
+            var checkedCount = $('input[name="postIds[]"]:checked').length;
+            
+            if (checkedCount > 0) {
+                checkAllSubmitBtn.removeAttr('disabled');
+            } else {
+                checkAllSubmitBtn.attr('disabled', true)
+            }
+        }
     });
 </script>
